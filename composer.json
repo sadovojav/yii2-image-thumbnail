@@ -27,7 +27,7 @@
   },
   "autoload": {
     "psr-4": {
-      "sadovojav\\thumbnail\\": ""
+      "sadovojav\\image\\": ""
     }
   }
 }
