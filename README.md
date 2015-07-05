@@ -37,8 +37,8 @@ Attach the component in your config file:
 ```
 
 #### Parameters
-- string `basePath` = `@webroot` - Base path
-- string `cachePath` = `@webroot/assets/thumbnails` - Cache path alias
+- string `basePath` = `@runtime` - Base path
+- string `cachePath` = `@runtime/thumbnails` - Cache path alias
 - integer `cacheExpire` = `604800` - Cache expire time
 - array `options` - other options (placeholder)
 
