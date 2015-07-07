@@ -30,5 +30,10 @@
     "psr-4": {
       "sadovojav\\image\\": ""
     }
+  },
+  "extra": {
+    "asset-installer-paths": {
+      "bower-asset-library": "vendor/bower"
+    }
   }
 }
