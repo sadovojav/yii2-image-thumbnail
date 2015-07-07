@@ -24,16 +24,11 @@
     "php": ">=5.4.0",
     "yiisoft/yii2": "*",
     "yiisoft/yii2-imagine": "*",
-    "imsky/holder": "*"
+    "bower-asset/holderjs": "2.8"
   },
   "autoload": {
     "psr-4": {
       "sadovojav\\image\\": ""
-    }
-  },
-  "extra": {
-    "asset-installer-paths": {
-      "bower-asset-library": "vendor/bower"
     }
   }
 }
