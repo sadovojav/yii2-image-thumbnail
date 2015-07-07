@@ -51,7 +51,9 @@ class Thumbnail extends \yii\base\Component
             'type' => Thumbnail::PLACEHOLDER_TYPE_URL,
             'backgroundColor' => '#f5f5f5',
             'textColor' => '#cdcdcd',
-            'text' => 'Ooops!'
+            'text' => 'Ooops!',
+            'random' => false,
+            'cache' => true
         ],
         'quality' => 92
     ];
@@ -68,14 +70,16 @@ class Thumbnail extends \yii\base\Component
 
     public function init()
     {
-        $this->options = array_merge($this->options, $this->defaultOptions);
+        $this->options['placeholder'] = count($this->options['placeholder'])
+            ? array_merge($this->defaultOptions['placeholder'], $this->options['placeholder'])
+            : $this->defaultOptions['placeholder'];
+
+        $this->options['quality'] = (!isset($this->options['quality']) || !is_numeric($this->options['quality']))
+            ? $this->defaultOptions['quality']
+            : $this->options['quality'];
 
         if ($this->options['placeholder']['type'] == Thumbnail::PLACEHOLDER_TYPE_JS) {
-            list(,$path) = \Yii::$app->assetManager->publish(__DIR__."/assets");
-
-            Yii::$app->getView()->registerJsFile($path . '/js/holder.min.js', [
-                'position' => View::POS_END
-            ]);
+            AssetBundle::register(Yii::$app->getView());
         }
     }
 
@@ -86,7 +90,7 @@ class Thumbnail extends \yii\base\Component
      * @param array $options
      * @return string
      */
-    public function img($file, $params, $options = [])
+    public function img($file, array $params, $options = [])
     {
         $cacheFileSrc = $this->make($file, $params);
 
@@ -107,7 +111,7 @@ class Thumbnail extends \yii\base\Component
      * @param array $params
      * @return string
      */
-    public function url($file, $params)
+    public function url($file, array $params)
     {
         $cacheFileSrc = $this->make($file, $params);
 
@@ -144,18 +148,19 @@ class Thumbnail extends \yii\base\Component
         }
 
         $text = !empty($params['text']) ? $params['text'] : $this->options['placeholder']['text'];
+        $random = isset($params['random']) ? $params['random'] : $this->options['placeholder']['random'];
 
         if ($this->options['placeholder']['type'] == self::PLACEHOLDER_TYPE_URL) {
-            $placeholder = $this->urlPlaceholder($width, $height, $text, $backgroundColor, $textColor, $options);
+            $placeholder = $this->urlPlaceholder($width, $height, $text, $backgroundColor, $textColor, $random, $options);
         } elseif ($this->options['placeholder']['type'] == self::PLACEHOLDER_TYPE_JS) {
-            $placeholder = $this->jsPlaceholder($width, $height, $text, $backgroundColor, $textColor, $options);
+            $placeholder = $this->jsPlaceholder($width, $height, $text, $backgroundColor, $textColor, $random, $options);
         }
 
         return $placeholder;
     }
 
     /**
-     * Return url placeholder image
+     * Return URL placeholder image
      * @param integer $width
      * @param integer $height
      * @param string $text
@@ -164,16 +169,48 @@ class Thumbnail extends \yii\base\Component
      * @param array $options
      * @return string
      */
-    private function urlPlaceholder($width, $height, $text, $backgroundColor, $textColor, $options)
+    private function urlPlaceholder($width, $height, $text, $backgroundColor, $textColor, $random, array $options)
     {
+        if ($random) {
+            $backgroundColor = $this->getRandomColor();
+        }
+
         $src = 'http://placehold.it/' . $width . 'x' . $height . '/' . str_replace('#', '', $backgroundColor) . '/' .
             str_replace('#', '', $textColor) . '&text=' . $text;
 
-        return Html::img($src, $options);
+        if (!$this->options['placeholder']['cache']) {
+            return Html::img($src, $options);
+        }
+
+        $cacheFileName = md5($width . $height . $text . $backgroundColor . $textColor);
+        $cacheFileExt = '.jpg';
+        $cacheFileDir = DIRECTORY_SEPARATOR . substr($cacheFileName, 0, 2);
+        $cacheFilePath = Yii::getAlias($this->cachePath) . $cacheFileDir;
+        $cacheFile = $cacheFilePath . DIRECTORY_SEPARATOR . $cacheFileName . $cacheFileExt;
+        $cacheUrl = str_replace('\\', '/', preg_replace('/^@[a-z]+/', '', $this->cachePath) . $cacheFileDir . DIRECTORY_SEPARATOR
+            . $cacheFileName . $cacheFileExt);
+
+        if (file_exists($cacheFile)) {
+            if ($this->cacheExpire !== 0 && (time() - filemtime($cacheFile)) > $this->cacheExpire) {
+                unlink($cacheFile);
+            } else {
+                return Html::img($cacheUrl, $options);
+            }
+        }
+
+        if (!is_dir($cacheFilePath)) {
+            mkdir($cacheFilePath, 0755, true);
+        }
+
+        $image = file_get_contents($src);
+
+        file_put_contents($cacheFile, $image);
+
+        return Html::img($cacheUrl, $options);
     }
 
     /**
-     * Return js placeholder image
+     * Return JS placeholder image
      * @param integer $width
      * @param integer $height
      * @param string $text
@@ -182,9 +219,13 @@ class Thumbnail extends \yii\base\Component
      * @param array $options
      * @return string
      */
-    private function jsPlaceholder($width, $height, $text, $backgroundColor, $textColor, $options)
+    private function jsPlaceholder($width, $height, $text, $backgroundColor, $textColor, $random, array $options)
     {
-        $src = 'holder.js/' . $width . 'x' . $height . '/' . $backgroundColor . ':' . $textColor . '/text:' . $text;
+        $src = 'holder.js/' . $width . 'x' . $height . '?bg=' . $backgroundColor . '&fg=' . $textColor . '&text=' . $text;
+
+        if ($random) {
+            $src .= $src . '&random=yes';
+        }
 
         return Html::img('', array_merge($options, ['data-src' => $src]));
     }
@@ -195,7 +236,7 @@ class Thumbnail extends \yii\base\Component
      * @param array $params
      * @return string
      */
-    private function make($file, $params)
+    private function make($file, array $params)
     {
         $file = FileHelper::normalizePath(Yii::getAlias($this->basePath . '/' . $file));
 
@@ -246,6 +287,15 @@ class Thumbnail extends \yii\base\Component
         ]);
 
         return $cacheUrl;
+    }
+
+    /**
+     * Get random color
+     * @return string
+     */
+    private function getRandomColor()
+    {
+        return sprintf('#%06X', mt_rand(0, 0xFFFFFF));
     }
 
     /**

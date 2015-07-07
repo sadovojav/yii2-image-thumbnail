@@ -8,6 +8,8 @@ It allows you to create placeholder with service [http://placehold.it/](http://p
 - Use Imagine
 - Automaticly thumbnails caching
 - Cache sorting to subdirectories
+- Caching placeholder from URL (placehold.it)
+- Random color
 - Use placehold.it & holder.js
 
 ## Installation
@@ -37,10 +39,12 @@ Attach the component in your config file:
 ```
 
 #### Parameters
-- string `basePath` = `@runtime` - Base path
+- string `basePath` = `@webroot` - Base path
 - string `cachePath` = `@runtime/thumbnails` - Cache path alias
 - integer `cacheExpire` = `604800` - Cache expire time
-- array `options` - other options (placeholder)
+- array `options` - other options (placeholder & quality)
+
+Default options:
 
 ```php
 'options' => [
@@ -48,15 +52,23 @@ Attach the component in your config file:
         'type' => sadovojav\image\Thumbnail::PLACEHOLDER_TYPE_URL,
         'backgroundColor' => '#f5f5f5',
         'textColor' => '#cdcdcd',
-        'text' => 'Ooops!'
+        'text' => 'Ooops!',
+        'random' => false
+        'cache' => true
     ],
     'quality => 92
 ]
 ```
 
-> Placeholder type
-> - 1. sadovojav\image\Thumbnail::PLACEHOLDER_TYPE_JS - holder.js
-> - 2. sadovojav\image\Thumbnail::PLACEHOLDER_TYPE_URL - get placeholder by url
+#### Attention
+```
+Cache only: PLACEHOLDER_TYPE_URL
+If both "random" and "cache" are enabled, each colour will be cached
+```
+
+#### Placeholder type
+- 1. sadovojav\image\Thumbnail::PLACEHOLDER_TYPE_JS - holder.js
+- 2. sadovojav\image\Thumbnail::PLACEHOLDER_TYPE_URL - get placeholder by url
 
 ## Using
 
@@ -71,6 +83,20 @@ This method returns Html::img()
 - array `$params` - Image manipulation methods. See Methods
 - array `$options` - options for Html::img()
 
+#### For example:
+```php
+<?= Yii::$app->thumbnail->img(IMAGE_SRC, [
+    'thumbnail' => [
+        'width' => 320,
+        'height' => 230,
+    ],
+    'placeholder' => [
+        'width' => 320,
+        'height' => 230
+    ]
+]); ?>
+```
+
 ### Get cache image url
 ```php
 echo Yii::$app->thumbnail->url($file, $params);
@@ -80,6 +106,38 @@ This method returns cache image url
 #### Parameters
 - string `$file` required - Image file path
 - array `$params` - Image manipulation methods. See Methods
+
+#### For example:
+```php
+<?= Yii::$app->thumbnail->url(IMAGE_SRC, [
+    'thumbnail' => [
+        'width' => 320,
+        'height' => 230,
+    ],
+    'placeholder' => [
+        'width' => 320,
+        'height' => 230
+    ]
+]); ?>
+```
+
+### Get placeholder image
+```php
+echo Yii::$app->thumbnail->placeholder($params, $options);
+```
+This method returns Html::img()
+
+#### Parameters
+- array `$params` required - Placeholder options. See Placeholder method
+- array `$options` - options for Html::img()
+
+#### For example:
+```php
+<?= Yii::$app->thumbnail->placeholder([
+    'width' => 320,
+    'height' => 230
+]); ?>
+```
 
 ## Method
 
@@ -134,3 +192,5 @@ This method return image placeholder if image file doesn't exist.
 - string `backgroundColor` = `#f5f5f5` - Background color
 - string `textColor` = `#cdcdcd` - Text color
 - string `text` = `Ooops!` - Text
+- string `random` = `false` - Random color
+- string `cache` = `true` - Cache placeholder
