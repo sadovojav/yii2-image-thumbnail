@@ -238,7 +238,7 @@ class Thumbnail extends \yii\base\Component
      */
     private function make($file, array $params)
     {
-        $file = FileHelper::normalizePath(Yii::getAlias($this->basePath . '/' . $file));
+        $file = FileHelper::normalizePath($file);
 
         if (!is_file($file)) {
             return false;
