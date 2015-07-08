@@ -31,7 +31,7 @@ Attach the component in your config file:
     'thumbnail',
 ],
 
-'components'=>[
+'components' => [
     'thumbnail' => [
         'class' => 'sadovojav\image\Thumbnail',
     ],
@@ -44,7 +44,7 @@ Attach the component in your config file:
 - integer `cacheExpire` = `604800` - Cache expire time
 - array `options` - other options (placeholder & quality)
 
-Default options:
+#### Default options:
 
 ```php
 'options' => [
@@ -194,3 +194,10 @@ This method return image placeholder if image file doesn't exist.
 - string `text` = `Ooops!` - Text
 - string `random` = `false` - Random color
 - string `cache` = `true` - Cache placeholder
+
+
+#### Attention
+```
+Cache only: PLACEHOLDER_TYPE_URL
+If both "random" and "cache" are enabled, each colour will be cached
+```

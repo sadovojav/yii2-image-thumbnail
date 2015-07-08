@@ -3,7 +3,6 @@
 namespace sadovojav\image;
 
 use Yii;
-use yii\web\View;
 use yii\base\Exception;
 use yii\helpers\Html;
 use yii\helpers\FileHelper;
@@ -238,7 +237,7 @@ class Thumbnail extends \yii\base\Component
      */
     private function make($file, array $params)
     {
-        $file = FileHelper::normalizePath($file);
+        $file = FileHelper::normalizePath(Yii::getAlias($this->basePath . '/' . $file));
 
         if (!is_file($file)) {
             return false;

@@ -4,7 +4,7 @@ namespace sadovojav\image;
 
 /**
  * Class AssetBundle
- * @package adovojav\image
+ * @package sadovojav\image
  */
 class AssetBundle extends \yii\web\AssetBundle
 {
