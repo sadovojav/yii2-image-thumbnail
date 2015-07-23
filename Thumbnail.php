@@ -250,7 +250,7 @@ class Thumbnail extends \yii\base\Component
         $cacheFileDir = DIRECTORY_SEPARATOR . substr($cacheFileName, 0, 2);
         $cacheFilePath = Yii::getAlias($this->cachePath) . $cacheFileDir;
         $cacheFile = $cacheFilePath . DIRECTORY_SEPARATOR . $cacheFileName . $cacheFileExt;
-        $cacheUrl = str_replace('\\', '/', preg_replace('/^@[a-z]+/', '', $this->cachePath) . $cacheFileDir . DIRECTORY_SEPARATOR
+        $cacheUrl = Yii::getAlias('@web').str_replace('\\', '/', preg_replace('/^@[a-z]+/', '', $this->cachePath) . $cacheFileDir . DIRECTORY_SEPARATOR
             . $cacheFileName . $cacheFileExt);
 
         if (file_exists($cacheFile)) {
