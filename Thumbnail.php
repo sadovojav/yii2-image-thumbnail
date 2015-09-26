@@ -69,9 +69,11 @@ class Thumbnail extends \yii\base\Component
 
     public function init()
     {
-        $this->options['placeholder'] = count($this->options['placeholder'])
-            ? array_merge($this->defaultOptions['placeholder'], $this->options['placeholder'])
-            : $this->defaultOptions['placeholder'];
+        if (isset($this->options['placeholder']) && count($this->options['placeholder'])) {
+            $this->options['placeholder'] = array_merge($this->defaultOptions['placeholder'], $this->options['placeholder']);
+        } else {
+            $this->options['placeholder'] = $this->defaultOptions['placeholder'];
+        }
 
         $this->options['quality'] = (!isset($this->options['quality']) || !is_numeric($this->options['quality']))
             ? $this->defaultOptions['quality']
