@@ -369,4 +369,69 @@ class Thumbnail extends \yii\base\Component
 
         $this->image = $this->image->thumbnail(new Box($width, $height), $mode);
     }
+
+    /**
+     * Add watermark to image
+     * @param array $params Set watermark params
+     * @throws Exception Bad params
+     */
+    private function watermark(array $params)
+    {
+        if (isset($params['posX']) && is_numeric($params['posX'])) {
+            $posX = $params['posX'];
+        }  else {
+            $posX = null;
+        }
+
+        if (isset($params['posY']) && is_numeric($params['posY'])) {
+            $posY = $params['posY'];
+        }  else {
+            $posY = null;
+        }
+
+        if (is_null($posX) || is_null($posY)) {
+            throw new Exception('Wrong watermark coordinates');
+        }
+
+        if (isset($params['width']) && is_numeric($params['width'])) {
+            $width = $params['width'];
+        } else {
+            $width = 0;
+        }
+
+        if (isset($params['height']) && is_numeric($params['height'])) {
+            $height = $params['height'];
+        } else {
+            $height = 0;
+        }
+
+        $mode = isset($params['mode']) ? $params['mode'] : self::THUMBNAIL_OUTBOUND;
+
+        if (isset($params['image']) && file_exists(Yii::getAlias($params['image']))) {
+            $watermark_path = Yii::getAlias($params['image']);
+        }  else {
+            $watermark_path = null;
+        }
+
+        if (is_null($watermark_path)) {
+            throw new Exception('Incorrect watermark image path');
+        }
+
+        $watermark = Image::getImagine()->open($watermark_path);
+
+        if($this->image->getSize()->getHeight() < $posY + $watermark->getSize()->getHeight() ||
+            $this->image->getSize()->getWidth() < $posX + $watermark->getSize()->getWidth()) {
+            throw new Exception('Cannot paste watermark of the given size at the specified position, as it moves outside of the image\'s box');
+        }
+
+
+        if ($width > 0 && $height > 0) {
+            $height = $this->image->getSize()->getHeight();
+            $width = $this->image->getSize()->getWidth();
+            $watermark = $watermark->thumbnail(new Box($width, $height), $mode);
+        }
+        $position = new Point($posX, $posY);
+
+        $this->image->paste($watermark, $position);
+    }
 }
