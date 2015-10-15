@@ -201,3 +201,20 @@ This method return image placeholder if image file doesn't exist.
 Cache only: PLACEHOLDER_TYPE_URL
 If both "random" and "cache" are enabled, each colour will be cached
 ```
+
+### Watermark
+```php
+'watermark' => [
+    'posX' => 0,
+    'posY' => 0,
+    'width' => 50,
+    'height' => 50
+]
+```
+
+#### Parameters
+- integer `posX` required - X position top-left corner watermark
+- integer `posY` required - Y position top-left corber watermark
+- integer `width` - Watermark width
+- integer `hegiht` - Watermark height
+- string `mode` = `THUMBNAIL_OUTBOUND` - Thumbnail mode `THUMBNAIL_OUTBOUND` or `THUMBNAIL_INSET`
