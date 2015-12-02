@@ -27,10 +27,6 @@ or add ```"sadovojav/yii2-image-thumbnail": "dev-master"``` to the require secti
 Attach the component in your config file:
 
 ```php
-'bootstrap' => [
-    'thumbnail',
-],
-
 'components' => [
     'thumbnail' => [
         'class' => 'sadovojav\image\Thumbnail',
@@ -205,6 +201,7 @@ If both "random" and "cache" are enabled, each colour will be cached
 ### Watermark
 ```php
 'watermark' => [
+    'image' => IMAGE_SRC
     'posX' => 0,
     'posY' => 0,
     'width' => 50,
@@ -213,8 +210,9 @@ If both "random" and "cache" are enabled, each colour will be cached
 ```
 
 #### Parameters
-- integer `posX` required - X position top-left corner watermark
-- integer `posY` required - Y position top-left corber watermark
+- string `image` required - watermark path
+- integer `posX` required - X/-X watermark position
+- integer `posY` required - Y/-Y watermark position
 - integer `width` - Watermark width
-- integer `hegiht` - Watermark height
+- integer `height` - Watermark height
 - string `mode` = `THUMBNAIL_OUTBOUND` - Thumbnail mode `THUMBNAIL_OUTBOUND` or `THUMBNAIL_INSET`

@@ -3,12 +3,12 @@
 namespace sadovojav\image;
 
 use Yii;
-use yii\base\Exception;
 use yii\helpers\Html;
-use yii\helpers\FileHelper;
-use yii\imagine\Image;
 use Imagine\Image\Box;
+use yii\imagine\Image;
+use yii\base\Exception;
 use Imagine\Image\Point;
+use yii\helpers\FileHelper;
 use Imagine\Image\ManipulatorInterface;
 
 /**
@@ -66,6 +66,7 @@ class Thumbnail extends \yii\base\Component
     const FUNCTION_CROP = 'crop';
     const FUNCTION_RESIZE = 'resize';
     const FUNCTION_THUMBNAIL = 'thumbnail';
+    const FUNCTION_WATERMARK = 'watermark';
 
     public function init()
     {
@@ -280,6 +281,9 @@ class Thumbnail extends \yii\base\Component
                 case self::FUNCTION_CROP :
                     $this->crop($value);
                     break;
+                case self::FUNCTION_WATERMARK :
+                    $this->watermark($value);
+                    break;
             }
         }
 
@@ -379,13 +383,13 @@ class Thumbnail extends \yii\base\Component
     {
         if (isset($params['posX']) && is_numeric($params['posX'])) {
             $posX = $params['posX'];
-        }  else {
+        } else {
             $posX = null;
         }
 
         if (isset($params['posY']) && is_numeric($params['posY'])) {
             $posY = $params['posY'];
-        }  else {
+        } else {
             $posY = null;
         }
 
@@ -408,28 +412,38 @@ class Thumbnail extends \yii\base\Component
         $mode = isset($params['mode']) ? $params['mode'] : self::THUMBNAIL_OUTBOUND;
 
         if (isset($params['image']) && file_exists(Yii::getAlias($params['image']))) {
-            $watermark_path = Yii::getAlias($params['image']);
-        }  else {
-            $watermark_path = null;
+            $watermarkPath = Yii::getAlias($params['image']);
+        } else {
+            $watermarkPath = null;
         }
 
-        if (is_null($watermark_path)) {
+        if (is_null($watermarkPath)) {
             throw new Exception('Incorrect watermark image path');
         }
 
-        $watermark = Image::getImagine()->open($watermark_path);
+        $watermark = Image::getImagine()->open($watermarkPath);
 
-        if($this->image->getSize()->getHeight() < $posY + $watermark->getSize()->getHeight() ||
-            $this->image->getSize()->getWidth() < $posX + $watermark->getSize()->getWidth()) {
+        if ($this->image->getSize()->getHeight() < $posY + $watermark->getSize()->getHeight() ||
+            $this->image->getSize()->getWidth() < $posX + $watermark->getSize()->getWidth()
+        ) {
             throw new Exception('Cannot paste watermark of the given size at the specified position, as it moves outside of the image\'s box');
         }
-
 
         if ($width > 0 && $height > 0) {
             $height = $this->image->getSize()->getHeight();
             $width = $this->image->getSize()->getWidth();
+
             $watermark = $watermark->thumbnail(new Box($width, $height), $mode);
         }
+
+        if ($posX < 0) {
+            $posX = $this->image->getSize()->getWidth() - abs($posX) - $watermark->getSize()->getWidth();
+        }
+
+        if ($posY < 0) {
+            $posY = $this->image->getSize()->getHeight() - abs($posY) - $watermark->getSize()->getHeight();
+        }
+
         $position = new Point($posX, $posY);
 
         $this->image->paste($watermark, $position);
