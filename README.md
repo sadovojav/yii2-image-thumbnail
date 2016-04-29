@@ -48,6 +48,7 @@ Attach the component in your config file:
         'type' => sadovojav\image\Thumbnail::PLACEHOLDER_TYPE_URL,
         'backgroundColor' => '#f5f5f5',
         'textColor' => '#cdcdcd',
+        'textSize' => 30,
         'text' => 'Ooops!',
         'random' => false
         'cache' => true

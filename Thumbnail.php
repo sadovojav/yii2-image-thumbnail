@@ -18,38 +18,43 @@ use Imagine\Image\ManipulatorInterface;
 class Thumbnail extends \yii\base\Component
 {
     /**
+     * Path to cache directory
      * @var string
      */
     public $cachePath = '@runtime/thumbnails';
 
     /**
-     * @var string
+     * Base path
+     * @var null
      */
-    public $basePath = '@webroot';
+    public $basePath = null;
 
     /**
+     * Prefix path
+     * @var null
+     */
+    public $prefixPath = null;
+
+    /**
+     * Image cache expire
      * @var int
      */
     public $cacheExpire = 604800;
 
     /**
+     * Options
      * @var array
      */
     public $options = [];
 
-    /**
-     * @var
-     */
     private $image;
 
-    /**
-     * @var array
-     */
     private $defaultOptions = [
         'placeholder' => [
             'type' => Thumbnail::PLACEHOLDER_TYPE_URL,
             'backgroundColor' => '#f5f5f5',
             'textColor' => '#cdcdcd',
+            'textSize' => 30,
             'text' => 'Ooops!',
             'random' => false,
             'cache' => true
@@ -149,11 +154,14 @@ class Thumbnail extends \yii\base\Component
             $textColor = $this->options['placeholder']['textColor'];
         }
 
+        $textSize = (isset($params['textSize']) && is_numeric($params['textSize'])) ? $params['textSize'] : $this->options['placeholder']['textSize'];
+
         $text = !empty($params['text']) ? $params['text'] : $this->options['placeholder']['text'];
         $random = isset($params['random']) ? $params['random'] : $this->options['placeholder']['random'];
 
         if ($this->options['placeholder']['type'] == self::PLACEHOLDER_TYPE_URL) {
-            $placeholder = $this->urlPlaceholder($width, $height, $text, $backgroundColor, $textColor, $random, $options);
+            $placeholder = $this->urlPlaceholder($width, $height, $text, $backgroundColor, $textColor, $textSize,
+                $random, $options);
         } elseif ($this->options['placeholder']['type'] == self::PLACEHOLDER_TYPE_JS) {
             $placeholder = $this->jsPlaceholder($width, $height, $text, $backgroundColor, $textColor, $random, $options);
         }
@@ -171,20 +179,21 @@ class Thumbnail extends \yii\base\Component
      * @param array $options
      * @return string
      */
-    private function urlPlaceholder($width, $height, $text, $backgroundColor, $textColor, $random, array $options)
+    private function urlPlaceholder($width, $height, $text, $backgroundColor, $textColor, $textSize, $random, array
+    $options)
     {
         if ($random) {
             $backgroundColor = $this->getRandomColor();
         }
 
-        $src = 'http://placehold.it/' . $width . 'x' . $height . '/' . str_replace('#', '', $backgroundColor) . '/' .
-            str_replace('#', '', $textColor) . '&text=' . $text;
+        $src = 'https://placeholdit.imgix.net/~text?txtsize=' . $textSize . '&bg=' . str_replace('#', '',
+                $backgroundColor) . '&txtclr=' . str_replace('#', '', $textColor) . '&txt=' . $text . '&w=' . $width . '&h=' . $height;
 
         if (!$this->options['placeholder']['cache']) {
             return Html::img($src, $options);
         }
 
-        $cacheFileName = md5($width . $height . $text . $backgroundColor . $textColor);
+        $cacheFileName = md5($width . $height . $text . $backgroundColor . $textColor . $textSize);
         $cacheFileExt = '.jpg';
         $cacheFileDir = DIRECTORY_SEPARATOR . substr($cacheFileName, 0, 2);
         $cacheFilePath = Yii::getAlias($this->cachePath) . $cacheFileDir;
@@ -255,6 +264,8 @@ class Thumbnail extends \yii\base\Component
         $cacheFile = $cacheFilePath . DIRECTORY_SEPARATOR . $cacheFileName . $cacheFileExt;
         $cacheUrl = str_replace('\\', '/', preg_replace('/^@[a-z]+/', '', $this->cachePath) . $cacheFileDir . DIRECTORY_SEPARATOR
             . $cacheFileName . $cacheFileExt);
+
+        $cacheUrl = !is_null($this->prefixPath) ? $this->prefixPath . $cacheUrl : $cacheUrl;
 
         if (file_exists($cacheFile)) {
             if ($this->cacheExpire !== 0 && (time() - filemtime($cacheFile)) > $this->cacheExpire) {
