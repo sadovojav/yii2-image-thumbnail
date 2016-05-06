@@ -35,7 +35,8 @@ Attach the component in your config file:
 ```
 
 #### Parameters
-- string `basePath` = `@webroot` - Base path
+- string `basePath` = `null` - Base path
+- string `prefixPath` = `null` - Prefix path
 - string `cachePath` = `@runtime/thumbnails` - Cache path alias
 - integer `cacheExpire` = `604800` - Cache expire time
 - array `options` - other options (placeholder & quality)
