@@ -302,7 +302,7 @@ class Thumbnail extends \yii\base\Component
             mkdir($cacheFilePath, 0755, true);
         }
 
-        $this->image = Image::getImagine()->open($file);
+        $this->image = Image::getImagine()->open($fileFullPath);
 
         foreach ($params as $key => $value) {
             switch ($key) {
