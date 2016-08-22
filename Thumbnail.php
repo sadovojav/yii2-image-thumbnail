@@ -9,6 +9,7 @@ use yii\imagine\Image;
 use yii\base\Exception;
 use Imagine\Image\Point;
 use yii\helpers\FileHelper;
+use Kinglozzer\TinyPng\Compressor;
 use Imagine\Image\ManipulatorInterface;
 
 /**
@@ -47,6 +48,8 @@ class Thumbnail extends \yii\base\Component
      */
     public $options = [];
 
+    private $tiny;
+
     private $image;
 
     private $defaultOptions = [
@@ -58,6 +61,9 @@ class Thumbnail extends \yii\base\Component
             'text' => 'Ooops!',
             'random' => false,
             'cache' => true
+        ],
+        'tinyPng' => [
+            'apiKey' => null
         ],
         'quality' => 92
     ];
@@ -72,6 +78,7 @@ class Thumbnail extends \yii\base\Component
     const FUNCTION_RESIZE = 'resize';
     const FUNCTION_THUMBNAIL = 'thumbnail';
     const FUNCTION_WATERMARK = 'watermark';
+    const FUNCTION_COMPRESS = 'compress';
 
     public function init()
     {
@@ -87,6 +94,16 @@ class Thumbnail extends \yii\base\Component
 
         if ($this->options['placeholder']['type'] == Thumbnail::PLACEHOLDER_TYPE_JS) {
             AssetBundle::register(Yii::$app->getView());
+        }
+
+        if (isset($this->options['tinyPng']) && count($this->options['tinyPng'])) {
+            $this->options['tinyPng'] = array_merge($this->defaultOptions['tinyPng'], $this->options['tinyPng']);
+        } else {
+            $this->options['tinyPng'] = $this->defaultOptions['tinyPng'];
+        }
+
+        if (!is_null($this->options['tinyPng']['apiKey'])) {
+            $this->tiny = new Compressor($this->options['tinyPng']['apiKey']);
         }
     }
 
@@ -243,22 +260,28 @@ class Thumbnail extends \yii\base\Component
 
     /**
      * Make image and save to cache
-     * @param string $file
+     * @param string $filePath
      * @param array $params
      * @return string
      */
-    private function make($file, array $params)
+    private function make($filePath, array $params)
     {
-        $file = FileHelper::normalizePath(Yii::getAlias($this->basePath . '/' . $file));
+        if (!is_null($this->basePath)) {
+            $fileFullPath = FileHelper::normalizePath(Yii::getAlias($this->basePath . DIRECTORY_SEPARATOR . $filePath));
+        } else {
+            $fileFullPath = FileHelper::normalizePath($filePath);
+        }
 
-        if (!is_file($file)) {
+        $fileFullPath = urldecode($fileFullPath);
+
+        if (!is_file($fileFullPath)) {
             return false;
         }
 
         $quality = isset($params['quality']) ? $params['quality'] : $this->options['quality'];
 
-        $cacheFileName = md5($file . serialize($params) . $quality . filemtime($file));
-        $cacheFileExt = strrchr($file, '.');
+        $cacheFileName = md5($fileFullPath . serialize($params) . $quality . filemtime($fileFullPath));
+        $cacheFileExt = strrchr($fileFullPath, '.');
         $cacheFileDir = DIRECTORY_SEPARATOR . substr($cacheFileName, 0, 2);
         $cacheFilePath = Yii::getAlias($this->cachePath) . $cacheFileDir;
         $cacheFile = $cacheFilePath . DIRECTORY_SEPARATOR . $cacheFileName . $cacheFileExt;
@@ -301,6 +324,13 @@ class Thumbnail extends \yii\base\Component
         $this->image->save($cacheFile, [
             'quality' => $quality
         ]);
+
+        if (array_key_exists(self::FUNCTION_COMPRESS, $params)) {
+            if ($params[self::FUNCTION_COMPRESS] && !is_null($this->options['tinyPng']['apiKey'])) {
+                $result = $this->tiny->compress($cacheFile);
+                $result->writeTo($cacheFile);
+            }
+        }
 
         return $cacheUrl;
     }

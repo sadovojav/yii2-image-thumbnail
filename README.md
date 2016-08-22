@@ -6,10 +6,11 @@ It allows you to create placeholder with service [http://placehold.it/](http://p
 #### Features:
 - Easy to use
 - Use Imagine
+- TinyPng compression
 - Automaticly thumbnails caching
 - Cache sorting to subdirectories
 - Caching placeholder from URL (placehold.it)
-- Random color
+- Random placeholder color
 - Use placehold.it & holder.js
 
 ## Installation
@@ -39,7 +40,7 @@ Attach the component in your config file:
 - string `prefixPath` = `null` - Prefix path
 - string `cachePath` = `@runtime/thumbnails` - Cache path alias
 - integer `cacheExpire` = `604800` - Cache expire time
-- array `options` - other options (placeholder & quality)
+- array `options` - Other options (placeholder/quality/additional compression)
 
 #### Default options:
 
@@ -54,14 +55,17 @@ Attach the component in your config file:
         'random' => false
         'cache' => true
     ],
-    'quality => 92
+    'quality => 92,
+    'tinyPng' => [
+        'apiKey' => null
+    ],
 ]
 ```
 
 #### Attention
 ```
 Cache only: PLACEHOLDER_TYPE_URL
-If both "random" and "cache" are enabled, each colour will be cached
+If both "random" and "cache" are enabled, each color will be cached
 ```
 
 #### Placeholder type
@@ -197,7 +201,7 @@ This method return image placeholder if image file doesn't exist.
 #### Attention
 ```
 Cache only: PLACEHOLDER_TYPE_URL
-If both "random" and "cache" are enabled, each colour will be cached
+If both "random" and "cache" are enabled, each color will be cached
 ```
 
 ### Watermark
@@ -218,3 +222,9 @@ If both "random" and "cache" are enabled, each colour will be cached
 - integer `width` - Watermark width
 - integer `height` - Watermark height
 - string `mode` = `THUMBNAIL_OUTBOUND` - Thumbnail mode `THUMBNAIL_OUTBOUND` or `THUMBNAIL_INSET`
+
+### Compression (TinyPng)
+
+```php
+'compression' => true
+```
