@@ -62,10 +62,10 @@ class Thumbnail extends \yii\base\Component
             'random' => false,
             'cache' => true
         ],
+        'quality' => 92,
         'tinyPng' => [
             'apiKey' => null
-        ],
-        'quality' => 92
+        ]
     ];
 
     const THUMBNAIL_OUTBOUND = ManipulatorInterface::THUMBNAIL_OUTBOUND;

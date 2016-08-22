@@ -55,10 +55,10 @@ Attach the component in your config file:
         'random' => false
         'cache' => true
     ],
-    'quality => 92,
+    'quality' => 92,
     'tinyPng' => [
         'apiKey' => null
-    ],
+    ]
 ]
 ```
 
@@ -226,5 +226,5 @@ If both "random" and "cache" are enabled, each color will be cached
 ### Compression (TinyPng)
 
 ```php
-'compression' => true
+'compress' => true
 ```
