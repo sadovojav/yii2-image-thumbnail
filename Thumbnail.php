@@ -212,10 +212,10 @@ class Thumbnail extends \yii\base\Component
 
         $cacheFileName = md5($width . $height . $text . $backgroundColor . $textColor . $textSize);
         $cacheFileExt = '.jpg';
-        $cacheFileDir = DIRECTORY_SEPARATOR . substr($cacheFileName, 0, 2);
+        $cacheFileDir = '/' . substr($cacheFileName, 0, 2);
         $cacheFilePath = Yii::getAlias($this->cachePath) . $cacheFileDir;
-        $cacheFile = $cacheFilePath . DIRECTORY_SEPARATOR . $cacheFileName . $cacheFileExt;
-        $cacheUrl = str_replace('\\', '/', preg_replace('/^@[a-z]+/', '', $this->cachePath) . $cacheFileDir . DIRECTORY_SEPARATOR
+        $cacheFile = $cacheFilePath . '/' . $cacheFileName . $cacheFileExt;
+        $cacheUrl = str_replace('\\', '/', preg_replace('/^@[a-z]+/', '', $this->cachePath) . $cacheFileDir . '/'
             . $cacheFileName . $cacheFileExt);
 
         if (file_exists($cacheFile)) {
@@ -267,7 +267,7 @@ class Thumbnail extends \yii\base\Component
     private function make($filePath, array $params)
     {
         if (!is_null($this->basePath)) {
-            $fileFullPath = FileHelper::normalizePath(Yii::getAlias($this->basePath . DIRECTORY_SEPARATOR . $filePath));
+            $fileFullPath = FileHelper::normalizePath(Yii::getAlias($this->basePath . '/' . $filePath));
         } else {
             $fileFullPath = FileHelper::normalizePath($filePath);
         }
@@ -282,10 +282,10 @@ class Thumbnail extends \yii\base\Component
 
         $cacheFileName = md5($fileFullPath . serialize($params) . $quality . filemtime($fileFullPath));
         $cacheFileExt = strrchr($fileFullPath, '.');
-        $cacheFileDir = DIRECTORY_SEPARATOR . substr($cacheFileName, 0, 2);
+        $cacheFileDir = '/' . substr($cacheFileName, 0, 2);
         $cacheFilePath = Yii::getAlias($this->cachePath) . $cacheFileDir;
-        $cacheFile = $cacheFilePath . DIRECTORY_SEPARATOR . $cacheFileName . $cacheFileExt;
-        $cacheUrl = str_replace('\\', '/', preg_replace('/^@[a-z]+/', '', $this->cachePath) . $cacheFileDir . DIRECTORY_SEPARATOR
+        $cacheFile = $cacheFilePath . '/' . $cacheFileName . $cacheFileExt;
+        $cacheUrl = str_replace('\\', '/', preg_replace('/^@[a-z]+/', '', $this->cachePath) . $cacheFileDir . '/'
             . $cacheFileName . $cacheFileExt);
 
         $cacheUrl = !is_null($this->prefixPath) ? $this->prefixPath . $cacheUrl : $cacheUrl;
