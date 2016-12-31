@@ -222,7 +222,7 @@ class Thumbnail extends \yii\base\Component
             if ($this->cacheExpire !== 0 && (time() - filemtime($cacheFile)) > $this->cacheExpire) {
                 unlink($cacheFile);
             } else {
-                return Html::img($cacheUrl, $options);
+                return Html::img(Yii::$app->urlManager->createUrl($cacheUrl), $options);
             }
         }
 
@@ -234,7 +234,7 @@ class Thumbnail extends \yii\base\Component
 
         file_put_contents($cacheFile, $image);
 
-        return Html::img($cacheUrl, $options);
+        return Html::img(Yii::$app->urlManager->createUrl($cacheUrl), $options);
     }
 
     /**
@@ -294,7 +294,7 @@ class Thumbnail extends \yii\base\Component
             if ($this->cacheExpire !== 0 && (time() - filemtime($cacheFile)) > $this->cacheExpire) {
                 unlink($cacheFile);
             } else {
-                return $cacheUrl;
+                return Yii::$app->urlManager->createUrl($cacheUrl);
             }
         }
 
@@ -332,7 +332,7 @@ class Thumbnail extends \yii\base\Component
             }
         }
 
-        return $cacheUrl;
+        return Yii::$app->urlManager->createUrl($cacheUrl);
     }
 
     /**
