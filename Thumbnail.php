@@ -159,14 +159,14 @@ class Thumbnail extends \yii\base\Component
             throw new Exception('Wrong placeholder width or height');
         }
 
-        if (isset($options['backgroundColor']) && $this->checkHexColor($options['backgroundColor'])) {
-            $backgroundColor = $options['backgroundColor'];
+        if (isset($params['backgroundColor']) && $this->checkHexColor($params['backgroundColor'])) {
+            $backgroundColor = $params['backgroundColor'];
         } else {
             $backgroundColor = $this->options['placeholder']['backgroundColor'];
         }
 
-        if (isset($options['textColor']) && $this->checkHexColor($options['textColor'])) {
-            $textColor = $options['textColor'];
+        if (isset($params['textColor']) && $this->checkHexColor($params['textColor'])) {
+            $textColor = $params['textColor'];
         } else {
             $textColor = $this->options['placeholder']['textColor'];
         }
