@@ -2,6 +2,7 @@
 
 namespace sadovojav\image;
 
+use yii\helpers\Url;
 use yii\helpers\Html;
 use Imagine\Image\Box;
 use yii\imagine\Image;
@@ -110,42 +111,48 @@ class Thumbnail extends \yii\base\Component
      * @param string $file
      * @param array $params
      * @param array $options
+     * @param bool $schema
      * @return string
      */
-    public function img($file, array $params, $options = [])
+    public function img($file, array $params, $options = [], $schema = false)
     {
         $cacheFileSrc = $this->make($file, $params);
 
         if (!$cacheFileSrc) {
             if (isset($params['placeholder'])) {
-                return Html::img($this->placeholder($params['placeholder']), $options);
+                $fileUrl = Url::to($this->placeholder($params['placeholder']), $schema);
+
+                return Html::img($fileUrl, $options);
             } else {
                 return null;
             }
         }
 
-        return Html::img($cacheFileSrc, $options);
+        $fileUrl = Url::to($cacheFileSrc, $schema);
+
+        return Html::img($fileUrl, $options);
     }
 
     /**
      * Creates and caches the image thumbnail and returns image url
      * @param string $file
      * @param array $params
+     * @param bool $schema
      * @return string
      */
-    public function url($file, array $params)
+    public function url($file, array $params, $schema = false)
     {
         $cacheFileSrc = $this->make($file, $params);
 
         if (!$cacheFileSrc) {
             if (isset($params['placeholder'])) {
-                return $this->placeholder($params['placeholder']);
+                $cacheFileSrc = $this->placeholder($params['placeholder']);
             } else {
                 return null;
             }
         }
 
-        return $cacheFileSrc ? $cacheFileSrc : null;
+        return Url::to($cacheFileSrc, $schema);
     }
 
     /**
@@ -193,13 +200,13 @@ class Thumbnail extends \yii\base\Component
 
     /**
      * Return cache path from Imagine placeholder
-     * @param $width
-     * @param $height
-     * @param $text
-     * @param $backgroundColor
-     * @param $textColor
-     * @param $textSize
-     * @return mixed
+     * @param integer $width
+     * @param integer $height
+     * @param string $text
+     * @param string $backgroundColor
+     * @param string $textColor
+     * @param integer $textSize
+     * @return string
      */
     private function imaginePlaceholder($width, $height, $text, $backgroundColor, $textColor, $textSize)
     {
