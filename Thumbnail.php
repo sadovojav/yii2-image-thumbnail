@@ -259,7 +259,7 @@ class Thumbnail extends \yii\base\Component
         }
 
         $src = 'https://placeholdit.imgix.net/~text?txtsize=' . $textSize . '&bg=' . str_replace('#', '',
-                $backgroundColor) . '&txtclr=' . str_replace('#', '', $textColor) . '&txt=' . $text . '&w=' . $width . '&h=' . $height;
+                $backgroundColor) . '&txtclr=' . str_replace('#', '', $textColor) . '&txt=' . rawurlencode($text) . '&w=' . $width . '&h=' . $height;
 
         $image = file_get_contents($src);
 
