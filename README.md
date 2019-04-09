@@ -1,7 +1,7 @@
 # Yii2 image thumbnail
 
 Create image thumbnails use Imagine. Thumbnail created and cached automatically.
-It allows you to create placeholder with service [http://placeholdit.imgix.net/](http://placeholdit.imgix.net/) or holder.js.
+It allows you to create placeholder with service [https://placeholder.com/](https://placeholder.com/), holder.js or Imagine
 
 #### Features:
 - Easy to use
@@ -58,6 +58,9 @@ Attach the component in your config file:
     ]
 ]
 ```
+
+#### Note
+```textSize - does't support on PLACEHOLDER_TYPE_URL```
 
 #### Placeholder type
 - 1. sadovojav\image\Thumbnail::PLACEHOLDER_TYPE_JS - holder.js

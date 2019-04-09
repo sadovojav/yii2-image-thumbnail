@@ -188,7 +188,7 @@ class Thumbnail extends \yii\base\Component
         $text = !empty($params['text']) ? $params['text'] : $this->options['placeholder']['text'];
 
         if ($this->options['placeholder']['type'] == self::PLACEHOLDER_TYPE_URL) {
-            $placeholder = $this->urlPlaceholder($width, $height, $text, $backgroundColor, $textColor, $textSize);
+            $placeholder = $this->urlPlaceholder($width, $height, $text, $backgroundColor, $textColor);
         } elseif ($this->options['placeholder']['type'] == self::PLACEHOLDER_TYPE_JS) {
             $placeholder = $this->jsPlaceholder($width, $height, $text, $backgroundColor, $textColor, $textSize);
         } elseif ($this->options['placeholder']['type'] == self::PLACEHOLDER_TYPE_IMAGINE) {
@@ -247,19 +247,18 @@ class Thumbnail extends \yii\base\Component
      * @param string $text
      * @param string $backgroundColor
      * @param string $textColor
-     * @param string $textSize
      * @return string
      */
-    private function urlPlaceholder($width, $height, $text, $backgroundColor, $textColor, $textSize)
+    private function urlPlaceholder($width, $height, $text, $backgroundColor, $textColor)
     {
-        $cache = $this->findPlaceholderInCache($width . $height . $text . $backgroundColor . $textColor . $textSize);
+        $cache = $this->findPlaceholderInCache($width . $height . $text . $backgroundColor . $textColor);
 
         if ($cache['exists']) {
             return $cache['url'];
         }
 
-        $src = 'https://placeholdit.imgix.net/~text?txtsize=' . $textSize . '&bg=' . str_replace('#', '',
-                $backgroundColor) . '&txtclr=' . str_replace('#', '', $textColor) . '&txt=' . rawurlencode($text) . '&w=' . $width . '&h=' . $height;
+        $src = 'https://via.placeholder.com/' . $width . 'x' . $height . '/' . str_replace('#', '',
+                $backgroundColor) .  '/' . str_replace('#', '', $textColor) . '/?text=' . rawurlencode($text);
 
         $image = file_get_contents($src);
 
@@ -280,7 +279,7 @@ class Thumbnail extends \yii\base\Component
      */
     private function jsPlaceholder($width, $height, $text, $backgroundColor, $textColor, $textSize)
     {
-        return 'holder.js/' . $width . 'x' . $height . '?bg=' . $backgroundColor . '&fg=' . $textColor . '&size=' . 
+        return 'holder.js/' . $width . 'x' . $height . '?bg=' . $backgroundColor . '&fg=' . $textColor . '&size=' .
     $textSize . '&text=' . $text;
     }
 
