@@ -298,6 +298,8 @@ class Thumbnail extends \yii\base\Component
         $cacheUrl = str_replace('\\', '/', preg_replace('/^@[a-z]+/', '', $this->cachePath) . $cacheFileDir . '/'
             . $cacheFileName . $cacheFileExt);
 
+        $cacheUrl = !is_null($this->prefixPath) ? $this->prefixPath . $cacheUrl : $cacheUrl;
+
         if (file_exists($cacheFile)) {
             if ($this->cacheExpire !== 0 && (time() - filemtime($cacheFile)) > $this->cacheExpire) {
                 unlink($cacheFile);
