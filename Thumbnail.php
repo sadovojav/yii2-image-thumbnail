@@ -69,7 +69,6 @@ class Thumbnail extends \yii\base\Component
     const THUMBNAIL_OUTBOUND = ManipulatorInterface::THUMBNAIL_OUTBOUND;
     const THUMBNAIL_INSET = ManipulatorInterface::THUMBNAIL_INSET;
 
-    const PLACEHOLDER_TYPE_JS = 'js';
     const PLACEHOLDER_TYPE_URL = 'url';
     const PLACEHOLDER_TYPE_IMAGINE = 'imagine';
 
@@ -90,10 +89,6 @@ class Thumbnail extends \yii\base\Component
         $this->options['quality'] = (!isset($this->options['quality']) || !is_numeric($this->options['quality']))
             ? $this->defaultOptions['quality']
             : $this->options['quality'];
-
-        if ($this->options['placeholder']['type'] == Thumbnail::PLACEHOLDER_TYPE_JS) {
-            AssetBundle::register(\Yii::$app->getView());
-        }
 
         if (isset($this->options['tinyPng']) && count($this->options['tinyPng'])) {
             $this->options['tinyPng'] = array_merge($this->defaultOptions['tinyPng'], $this->options['tinyPng']);
@@ -189,8 +184,6 @@ class Thumbnail extends \yii\base\Component
 
         if ($this->options['placeholder']['type'] == self::PLACEHOLDER_TYPE_URL) {
             $placeholder = $this->urlPlaceholder($width, $height, $text, $backgroundColor, $textColor);
-        } elseif ($this->options['placeholder']['type'] == self::PLACEHOLDER_TYPE_JS) {
-            $placeholder = $this->jsPlaceholder($width, $height, $text, $backgroundColor, $textColor, $textSize);
         } elseif ($this->options['placeholder']['type'] == self::PLACEHOLDER_TYPE_IMAGINE) {
             $placeholder = $this->imaginePlaceholder($width, $height, $text, $backgroundColor, $textColor, $textSize);
         }
@@ -265,22 +258,6 @@ class Thumbnail extends \yii\base\Component
         file_put_contents($cache['file'], $image);
 
         return $cache['url'];
-    }
-
-    /**
-     * Return JS placeholder image
-     * @param integer $width
-     * @param integer $height
-     * @param string $text
-     * @param string $backgroundColor
-     * @param string $textColor
-     * @param string $textSize
-     * @return string
-     */
-    private function jsPlaceholder($width, $height, $text, $backgroundColor, $textColor, $textSize)
-    {
-        return 'holder.js/' . $width . 'x' . $height . '?bg=' . $backgroundColor . '&fg=' . $textColor . '&size=' .
-    $textSize . '&text=' . $text;
     }
 
     /**

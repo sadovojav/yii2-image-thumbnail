@@ -10,7 +10,7 @@ It allows you to create placeholder with service [https://placeholder.com/](http
 - Automaticly thumbnails caching
 - Cache sorting to subdirectories
 - Caching placeholder from URL (placeholdit.imgix.net)
-- Use placeholdit.imgix.net & holder.js
+- Use placeholdit.imgix.net
 
 ## Installation
 
@@ -63,9 +63,8 @@ Attach the component in your config file:
 ```textSize - does't support on PLACEHOLDER_TYPE_URL```
 
 #### Placeholder type
-- 1. sadovojav\image\Thumbnail::PLACEHOLDER_TYPE_JS - holder.js
-- 2. sadovojav\image\Thumbnail::PLACEHOLDER_TYPE_URL - get placeholder by url
-- 3. sadovojav\image\Thumbnail::PLACEHOLDER_TYPE_IMAGINE - create placeholder used Imagine
+- 1. sadovojav\image\Thumbnail::PLACEHOLDER_TYPE_URL - get placeholder by url
+- 2. sadovojav\image\Thumbnail::PLACEHOLDER_TYPE_IMAGINE - create placeholder used Imagine
 
 ## Using
 
