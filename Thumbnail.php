@@ -61,6 +61,7 @@ class Thumbnail extends \yii\base\Component
             'text' => 'No image'
         ],
         'quality' => 92,
+        'format' => null,
         'tinyPng' => [
             'apiKey' => null
         ]
@@ -325,6 +326,11 @@ class Thumbnail extends \yii\base\Component
 
         $cacheFileName = md5($fileFullPath . serialize($params) . $quality . filemtime($fileFullPath));
         $cacheFileExt = strrchr($fileFullPath, '.');
+
+        if (!is_null($this->options['format'])) {
+            $cacheFileExt = '.' . $this->options['format'];
+        }
+
         $cacheFileDir = '/' . substr($cacheFileName, 0, 2);
         $cacheFilePath = \Yii::getAlias($this->cachePath) . $cacheFileDir;
         $cacheFile = $cacheFilePath . '/' . $cacheFileName . $cacheFileExt;

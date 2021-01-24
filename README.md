@@ -53,6 +53,7 @@ Attach the component in your config file:
         'text' => 'No image'
     ],
     'quality' => 92,
+    'format' => null, //webp, jpg, png
     'tinyPng' => [
         'apiKey' => null
     ]
