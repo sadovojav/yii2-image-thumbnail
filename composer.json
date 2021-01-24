@@ -1,7 +1,6 @@
 {
   "name": "sadovojav/yii2-image-thumbnail",
   "description": "Yii2 image thumbnail component",
-  "version": "3.1.0",
   "type": "yii2-extension",
   "keywords": [
     "yii2",
