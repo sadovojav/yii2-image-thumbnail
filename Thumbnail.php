@@ -90,6 +90,10 @@ class Thumbnail extends \yii\base\Component
         $this->options['quality'] = (!isset($this->options['quality']) || !is_numeric($this->options['quality']))
             ? $this->defaultOptions['quality']
             : $this->options['quality'];
+        
+        $this->options['format'] = (!isset($this->options['format']) || !is_string($this->options['format']))
+            ? $this->defaultOptions['format']
+            : $this->options['format'];
 
         if (isset($this->options['tinyPng']) && count($this->options['tinyPng'])) {
             $this->options['tinyPng'] = array_merge($this->defaultOptions['tinyPng'], $this->options['tinyPng']);
